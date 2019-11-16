@@ -7,7 +7,8 @@ from finders.gps import GPSPosition
 
 class BixiStopFinder:
     def __init__(self, bixi_station_information_path: str):
-        self._stops = parse_bixi_station_information(bixi_station_information_path)
+        with open(bixi_station_information_path, "r") as f:
+            self._stops = parse_bixi_station_information(f.read())
 
     def find_closest(self, gps: GPSPosition):
         return find_closest_stop(self._stops, gps)
