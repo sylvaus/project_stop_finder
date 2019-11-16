@@ -1,10 +1,10 @@
 from typing import List
 import json
 from finders.gps import GPSPosition
-from finders.stops import Stop
+from finders.stops import Stop, BixiStop
 
 
-def parse_bixi_station_information(json_str: str) -> List[Stop]:
+def parse_bixi_station_information(json_str: str) -> List[BixiStop]:
     # list of stops to return
     stops_list = []
 
@@ -23,8 +23,16 @@ def parse_bixi_station_information(json_str: str) -> List[Stop]:
         gps_position = GPSPosition(stop['lat'], stop['lon'])
         # extract station name
         station_name = stop['name']
+        # extract the station id
+        station_id = stop['station_id']
+        # extract rental method
+        rental_method = stop['rental_methods']
+        # extract capacity
+        station_capacity = stop['capacity']
+        # extract kiosk flag
+        has_kiosk = stop['has_kiosk']
         # add to the list
-        stops_list.append(Stop(station_name, gps_position))
+        stops_list.append(BixiStop(station_name, gps_position, station_id, rental_method, station_capacity, has_kiosk))
 
     return stops_list
 
