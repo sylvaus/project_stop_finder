@@ -18,3 +18,12 @@ class BixiStopFinder:
 
     def find_name(self, name: str, regex: bool = True):
         return find_stops_matching_name(self._stops, name, regex)
+
+
+def main():
+    path = "C:/Users/Merie/PycharmProjects/stop_finder/bixi/station_information.json"
+    BixiStopFinder(path)
+
+
+if __name__ == '__main__':
+    main()
