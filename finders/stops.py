@@ -19,7 +19,8 @@ class BixiStopInformation(Stop):
     short_name: str
     electric_bike_surcharge_waiver: bool
     eightd_has_key_dispenser: bool
-    eightd_station_services: list
+    #eightd_station_services: None
+
 
 @dataclass
 class BixiStopStatus():
@@ -33,4 +34,5 @@ class BixiStopStatus():
     is_renting: int
     is_returning: int
     last_reported: str
+
 
