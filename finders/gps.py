@@ -1,3 +1,6 @@
+"""
+Module for GPS data
+"""
 from dataclasses import dataclass
 from math import sin, cos, acos, radians
 
