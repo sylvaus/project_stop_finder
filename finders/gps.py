@@ -8,7 +8,14 @@ class GPSPosition:
     longitude: float
 
 
-def gps_distance(start: GPSPosition, end: GPSPosition):
+def gps_distance(start: GPSPosition, end: GPSPosition) -> int:
+   """
+   Calculates the distance between two GPS points
+   :param start: lat and long of start point
+   :param end: lat and log of end point
+   :return: distance between two points
+   """
+
     # Rayon de la terre en mètres (sphère IAG-GRS80)
     rt = 6378137
 
