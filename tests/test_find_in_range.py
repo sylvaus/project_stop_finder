@@ -15,7 +15,7 @@ SAMPLE_STOPS = [
 TEST_DATA = [
     (GPSPosition(45.498265, -73.707559), 950, [Stop("Bibliothèque du Boisé", GPSPosition(45.506314, -73.711494))
                                                 , Stop("Cavendish / Poirier", GPSPosition(45.504783, -73.704418))])
-    , (GPSPosition(45.498265, -73.707559), 750, [Stop("Bibliothèque du Boisé", GPSPosition(45.506314, -73.711494))])
+    , (GPSPosition(45.498265, -73.707559), 770, [Stop("Cavendish / Poirier", GPSPosition(45.504783, -73.704418))])
     , (GPSPosition(45.498265, -73.707559), 1400, [Stop("Bibliothèque du Boisé", GPSPosition(45.506314, -73.711494))
                                                     , Stop("Cavendish / Poirier", GPSPosition(45.504783, -73.704418))
                                                     , Stop("Thimens / Alexis-Nihon", GPSPosition(45.508977, -73.698584))])
