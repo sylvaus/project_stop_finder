@@ -26,4 +26,4 @@ TEST_DATA = [
 @pytest.mark.parametrize("current_gps_location, range_value,expected_stops", TEST_DATA)
 def test_find_in_range(current_gps_location, range_value, expected_stops):
     stops_in_range = find_stops_in_range(SAMPLE_STOPS, current_gps_location, range_value)
-    assert stops_in_range === expected_stops
+    assert stops_in_range == expected_stops
