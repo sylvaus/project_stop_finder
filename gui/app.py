@@ -50,34 +50,48 @@ SAMPLE_STOPS = [
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
+        # data parsing
         stop = request.form['stop']
         range = request.form['range']
+        current_location = request.form['current_location']
         rgx = request.form.get('rgx')
         rgxbool = False
         if rgx == "True":
             rgxbool = True
         if range != "":
             rangefloat = float(range)
+        if current_location != "":
+            current_location_list = current_location.split(',')
+            current_location_latitude = float(current_location_list[0])
+            current_location_longitude = float(current_location_list[1])
+
+        # Return invalid entry when stop and range are empty string
         if stop == "" and range == "":
             return "Invalid Entry"
+        
+        # Return available stops matching name 
         elif stop != "" and range == "":
-            str = "\r\n"
+            str = "<br/>"
             strlst = list()
             lst = find_stops_matching_name(SAMPLE_STOPS, stop, rgxbool)
             for target_list in lst:
                 strlst.append(target_list.name)
             return  str.join(strlst)
+        
+        #  Return available stops in range
         elif stop == "" and range != "":
-            str = "\r\n"
+            str = "<br/>"
             strlst = list()
-            lst = find_stops_in_range(SAMPLE_STOPS, GPSPosition(45.507387, -73.552101), rangefloat)
+            lst = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             for target_list in lst:
                 strlst.append(target_list.name)
             return str.join(strlst)
+
+        #  Return available stop in range and matching name.
         elif stop != "" and range != "":
-            str = "\r\n"
+            str = "<br/>"
             strlst = list()
-            lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(45.507387, -73.552101), rangefloat)
+            lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             lst = find_stops_matching_name(lst_in_range, stop, rgxbool)
             for target_list in lst:
                 strlst.append(target_list.name)
