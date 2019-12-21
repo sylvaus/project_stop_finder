@@ -1,4 +1,10 @@
 body{
-margin: 0;
-font-family: sans-serif;
+text-align: center;
+font-family: 'Courier New', Courier, monospace;
+}
+
+table{
+    display: flex;
+    justify-content: space-evenly;
+    text-align: left;
 }

@@ -9,15 +9,23 @@
     <h1>Stop Finder</h1>
     <div class="form">
         <form action="/" method="POST">
-            <label>Enter Stop Name</label>
-            <input type="text" name="stop" id="stop"><br><br>
-            <label>Enter Range </label>
-            <input type="text" name="range" id="range">
-            <br><br>
+            <table>
+                <tr>
+                    <td><label>Enter Stop Name</label></td>
+                    <td><input type="text" name="stop" id="stop">
+                        <!-- <input type="hidden" name="rgx" id="rgx" value="0"/> -->
+                        <input type="checkbox" name="rgx" id="rgx" value="True">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Enter Range </label></td>
+                    <td><input type="text" name="range" id="range"></td>
+                </tr>
+            </table>
+            <br>
             <div>
                 <input type="submit" value="Find">
             </div>
-<!--            <input type="checkbox" name="find_in_range" value="world" checked>-->
         </form>
     </div>
 </div>
