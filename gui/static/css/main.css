@@ -1,10 +1,15 @@
 body{
 text-align: center;
 font-family: 'Courier New', Courier, monospace;
+background-color: midnightblue;
 }
 
 table{
     display: flex;
     justify-content: space-evenly;
     text-align: left;
+}
+label{
+    text-shadow: darkslategrey;
+    color: ghostwhite;
 }

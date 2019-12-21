@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from typing import List
 from finders.find_name import find_stops_matching_name
 from finders.find_in_range import find_stops_in_range
 from finders.stops import Stop
@@ -67,37 +68,33 @@ def index():
 
         # Return invalid entry when stop and range are empty string
         if stop == "" and range == "":
-            return "Invalid Entry"
+            return render_template('index.html')
         
         # Return available stops matching name 
         elif stop != "" and range == "":
-            str = "<br/>"
-            strlst = list()
             lst = find_stops_matching_name(SAMPLE_STOPS, stop, rgxbool)
-            for target_list in lst:
-                strlst.append(target_list.name)
-            return  str.join(strlst)
+            return  render_template('index.html', result = response(lst))
         
         #  Return available stops in range
         elif stop == "" and range != "":
-            str = "<br/>"
-            strlst = list()
             lst = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
-            for target_list in lst:
-                strlst.append(target_list.name)
-            return str.join(strlst)
+            return render_template('index.html', result = response(lst))
 
         #  Return available stop in range and matching name.
         elif stop != "" and range != "":
-            str = "<br/>"
-            strlst = list()
+            if current_location == "":
+                return render_template('index.html', result = "Please enter your coordinates!!!")
             lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             lst = find_stops_matching_name(lst_in_range, stop, rgxbool)
-            for target_list in lst:
-                strlst.append(target_list.name)
-            return str.join(strlst)
-    else:
-        return render_template('index.html')
+            return render_template('index.html', result = response(lst))
+
+def response(lst: List[Stop]):
+    str = "<br/>"
+    strlst = list()
+    for target_list in lst:
+        strlst.append(target_list.name)
+    return str.join(strlst)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
