@@ -34,9 +34,9 @@
             </div>
         </form>
 
-        {% if result %}
+        {% if result %} {% autoescape false %}
         <p style="color: aqua;">{{ result }}</p>
-        {% endif %}
+        {% endautoescape %} {% endif %}
 
     </div>
 </div>
