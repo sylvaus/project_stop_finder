@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from typing import List
-# from dataclasses import dataclass
+from dataclasses import dataclass
 from finders.find_name import find_stops_matching_name
 from finders.find_in_range import find_stops_in_range
 from finders.find_closest import find_closest_stop
@@ -19,19 +19,19 @@ from finders.gps import GPSPosition
 #     def __repr__(self):
 #         return '<Task %r>' % self.id
 
-# @dataclass
-# class gui_parameters:
-#     rgxbool: bool
-#     rangefloat: float
-#     current_location_latitude: float
-#     current_location_longitude: float
+@dataclass
+class gui_parameters:
+    rgxbool: bool
+    rangefloat: float
+    current_location_latitude: float
+    current_location_longitude: float
 
 stop_:str
 range_:str
 rgx_:str
 current_location_:str
 response_: str = ""
-# parameters: gui_parameters(False, 0.0, 0.0, 0.0)
+
 
 SAMPLE_STOPS = [
     (Stop(name='de la Commune / Place Jacques-Cartier',
@@ -67,36 +67,16 @@ def index():
     global current_location_
     global rgx_
     global response_
-    # global parameters
 
-    rgxbool = False
-    current_location_latitude = 0.0
-    current_location_longitude = 0.0
-    rangefloat = 0.0
+    parameters = gui_parameters(False, 0.0, 0.0, 0.0)
 
     if request.method == 'POST':
         parse_data()
-
-        # set_parameters(parameters)
-        # refresh_page(parameters.current_location_latitude, parameters.current_location_longitude)
-        # return_stops_name(parameters.rgxbool)
-        # return_stops_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat)
-        # return_stops_name_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat, parameters.rgxbool)
-
-        if rgx_ == "True":
-            rgxbool = True
-        if range_ != "":
-            rangefloat = float(range_)
-        if current_location_ != "":
-            current_location_list = current_location_.split(',')
-            current_location_latitude = float(current_location_list[0])
-            current_location_longitude = float(current_location_list[1])
-
-        refresh_page(current_location_latitude, current_location_longitude)
-        return_stops_name(rgxbool)
-        return_stops_in_range(current_location_latitude, current_location_longitude, rangefloat)
-        return_stops_name_in_range(current_location_latitude, current_location_longitude, rangefloat, rgxbool)
-
+        set_parameters(parameters)
+        refresh_page(parameters.current_location_latitude, parameters.current_location_longitude)
+        return_stops_name(parameters.rgxbool, parameters.current_location_latitude, parameters.current_location_longitude)
+        return_stops_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat)
+        return_stops_name_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat, parameters.rgxbool)
     return response_
 
         
@@ -111,19 +91,21 @@ def parse_data():
     current_location_ = request.form['current_location']
     rgx_ = request.form.get('rgx')
 
-# def set_parameters(parameters: gui_parameters):
-#     global range_
-#     global current_location_
-#     global rgx_
 
-#     if rgx_ == "True":
-#             parameters.rgxbool = True
-#     if range_ != "":
-#         parameters.rangefloat = float(range_)
-#     if current_location_ != "":
-#         current_location_list = current_location_.split(',')
-#         parameters.current_location_latitude = float(current_location_list[0])
-#         parameters.current_location_longitude = float(current_location_list[1])
+def set_parameters(parameters: gui_parameters):
+    global range_
+    global current_location_
+    global rgx_
+
+    if rgx_ == "True":
+            parameters.rgxbool = True
+    if range_ != "":
+        parameters.rangefloat = float(range_)
+    if current_location_ != "":
+        current_location_list = current_location_.split(',')
+        parameters.current_location_latitude = float(current_location_list[0])
+        parameters.current_location_longitude = float(current_location_list[1])
+
 
 def refresh_page(current_location_latitude: float, current_location_longitude: float):
     global stop_
@@ -140,7 +122,7 @@ def refresh_page(current_location_latitude: float, current_location_longitude: f
             response_ = render_template('index.html')
 
 
-def return_stops_name(rgxbool: bool):
+def return_stops_name(rgxbool: bool, current_location_latitude: float, current_location_longitude: float):
     global stop_
     global range_
     global response_
@@ -148,7 +130,14 @@ def return_stops_name(rgxbool: bool):
     # Return available stops matching name 
     if stop_ != "" and range_ == "":
         lst = find_stops_matching_name(SAMPLE_STOPS, stop_, rgxbool)
-        response_ = render_template('index.html', result = response(lst))
+        if lst_is_empty(lst):
+            pass
+        elif current_location_ == "":
+            response_ = render_template('index.html', result = response(lst))
+        else:
+            stop = find_closest_stop(lst, GPSPosition(current_location_latitude, current_location_longitude))
+            response_ = render_template('index.html', result = stop.name)
+
 
 def return_stops_in_range(current_location_latitude: float, current_location_longitude: float, rangefloat: float):
     global stop_
@@ -159,9 +148,14 @@ def return_stops_in_range(current_location_latitude: float, current_location_lon
     if stop_ == "" and range_ != "":
         if current_location_ != "":
             lst = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
-            response_ = render_template('index.html', result = response(lst))
+            if not lst:
+                response_ = render_template('index.html', result = "Stop not found")
+            else:
+                if not lst_is_empty(lst):
+                    response_ = render_template('index.html', result = response(lst))
         else:
             response_ = render_template('index.html', result = "Please enter your coordinates!!!")
+
 
 def return_stops_name_in_range(current_location_latitude: float, current_location_longitude: float, rangefloat: float, rgxbool: bool):
     global stop_
@@ -174,11 +168,11 @@ def return_stops_name_in_range(current_location_latitude: float, current_locatio
         if current_location_ != "":
             lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             lst = find_stops_matching_name(lst_in_range, stop_, rgxbool)
-            response_ = render_template('index.html', result = response(lst))
+            if not lst_is_empty(lst):
+                response_ = render_template('index.html', result = response(lst))
         else:
             response_ = render_template('index.html', result = "Please enter your coordinates!!!")
-        
-    
+
 
 def response(lst: List[Stop]):
     str = "<br/>"
@@ -186,6 +180,15 @@ def response(lst: List[Stop]):
     for target_list in lst:
         strlst.append(target_list.name)
     return str.join(strlst)
+
+
+def lst_is_empty(lst: List[Stop]):
+    global response_
+
+    if not lst:
+        response_ = render_template('index.html', result = "Stop not found")
+        return True
+    return False
 
 
 if __name__ == "__main__":
