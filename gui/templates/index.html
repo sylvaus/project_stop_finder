@@ -16,8 +16,8 @@
                     <td><label>Enter Stop Name</label></td>
                     <td><input type="text" name="stop" id="stop">
                         <input type="checkbox" name="rgx" id="rgx" value="True" style="margin-left: -.5vw;">
-                        <label for ="rgx" style="margin-left: -.75vw; color: wheat;">regex</label>
-                        
+                        <label for="rgx" style="margin-left: -.75vw; color: wheat;">regex</label>
+
                     </td>
                 </tr>
                 <tr>
@@ -34,6 +34,38 @@
                 <input type="submit" value="Find">
             </div>
         </form>
+
+        {% if lstName %} {% autoescape false %}
+        <table>
+            <tr style="text-align: center;">
+                <th>Stop name</th>
+                <th>Distance To Reach</th>
+            </tr>
+            <tr>
+                <td>
+                    {% for ins in lstName %}
+                    <li>{{ins}}</li>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for ins in lstDistance %}
+                    <li>{{ins}}</li>
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+        {% endautoescape %} {% endif %}
+
+        {% if stopName %} {% autoescape false %}
+        <table>
+            <tr style="text-align: center;">
+                <th>Stop name</th><th>Distance To Reach</th>
+            </tr>
+            <tr>
+                <td>{{stopName}}</td><td>{{stopDistance}}</td>
+            </tr>
+        </table>
+        {% endautoescape %} {% endif %}
 
         {% if result %} {% autoescape false %}
         <p style="color: aqua;">{{ result }}</p>

@@ -122,9 +122,9 @@ def refresh_page(current_location_latitude: float, current_location_longitude: f
     if stop_ == "" and range_ == "":
         if current_location_ != "":
             stop = find_closest_stop(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude))
-            response_ = render_template('index.html', result = StopDistance(stop.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)))
+            response_ = render_template('index.html', stopName = stop.name, stopDistance = gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps))
         else:
-            response_ = render_template('index.html') #, result = response(SAMPLE_STOPS)
+            response_ = render_template('index.html')
 
 
 def return_stops_name(rgxbool: bool, current_location_latitude: float, current_location_longitude: float):
@@ -138,10 +138,10 @@ def return_stops_name(rgxbool: bool, current_location_latitude: float, current_l
         if lst_is_empty(lst):
             pass
         elif current_location_ == "":
-            response_ = render_template('index.html', result = response(lst))
+            response_ = render_template('index.html', result = send_stop_name(lst))
         else:
             stop = find_closest_stop(lst, GPSPosition(current_location_latitude, current_location_longitude))
-            response_ = render_template('index.html', result = StopDistance(stop.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)))
+            response_ = render_template('index.html', stopName = stop.name, stopDistance = gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps))
 
 
 def return_stops_in_range(current_location_latitude: float, current_location_longitude: float, rangefloat: float):
@@ -156,7 +156,7 @@ def return_stops_in_range(current_location_latitude: float, current_location_lon
             if lst_is_empty(lst):
                 pass
             else:
-                response_ = render_template('index.html', result = response(lst, current_location_latitude, current_location_longitude))
+                send_stop_name_and_distance(lst, current_location_latitude, current_location_longitude)
         else:
             response_ = render_template('index.html', result = "Please enter your coordinates!!!")
 
@@ -173,12 +173,23 @@ def return_stops_name_in_range(current_location_latitude: float, current_locatio
             lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             lst = find_stops_matching_name(lst_in_range, stop_, rgxbool)
             if not lst_is_empty(lst):
-                response_ = render_template('index.html', result = response(lst, current_location_latitude, current_location_longitude))
+                send_stop_name_and_distance(lst, current_location_latitude, current_location_longitude)
         else:
             response_ = render_template('index.html', result = "Please enter your coordinates!!!")
 
 
-def response(lst: List[Stop], current_location_latitude: float = 0.0, current_location_longitude: float = 0.0):
+def send_stop_name_and_distance(lst: List[Stop], current_location_latitude: float = 0.0, current_location_longitude: float = 0.0):
+    global response_
+
+    lstName = list()
+    lstDistance = list()
+    for target_list in lst:
+        lstName.append(target_list.name)
+        lstDistance.append(gps_distance(GPSPosition(current_location_latitude, current_location_longitude),target_list.gps))
+    response_ = render_template('index.html', lstName=lstName, lstDistance=lstDistance)
+
+
+def send_stop_name(lst: List[Stop], current_location_latitude: float = 0.0, current_location_longitude: float = 0.0):
     global range_
 
     str = "<br/>"
@@ -189,7 +200,6 @@ def response(lst: List[Stop], current_location_latitude: float = 0.0, current_lo
         else:
             strlst.append(repr(StopDistance(target_list.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), target_list.gps))))
     return str.join(strlst)
-
 
 def lst_is_empty(lst: List[Stop]):
     global response_
