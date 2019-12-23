@@ -5,7 +5,7 @@ from finders.find_name import find_stops_matching_name
 from finders.find_in_range import find_stops_in_range
 from finders.find_closest import find_closest_stop
 from finders.stops import Stop
-from finders.gps import GPSPosition
+from finders.gps import GPSPosition, gps_distance
 
 # from flask_sqlalchemy import SQLAlchemy
 # from datetime import datetime
@@ -20,17 +20,22 @@ from finders.gps import GPSPosition
 #         return '<Task %r>' % self.id
 
 @dataclass
-class gui_parameters:
+class GUIParameters:
     rgxbool: bool
     rangefloat: float
     current_location_latitude: float
     current_location_longitude: float
 
+@dataclass
+class StopDistance:
+    stop: Stop
+    distance: float
+
 stop_:str
 range_:str
 rgx_:str
 current_location_:str
-response_: str = ""
+response_: str
 
 
 SAMPLE_STOPS = [
@@ -68,7 +73,7 @@ def index():
     global rgx_
     global response_
 
-    parameters = gui_parameters(False, 0.0, 0.0, 0.0)
+    parameters = GUIParameters(False, 0.0, 0.0, 0.0)
 
     if request.method == 'POST':
         parse_data()
@@ -92,7 +97,7 @@ def parse_data():
     rgx_ = request.form.get('rgx')
 
 
-def set_parameters(parameters: gui_parameters):
+def set_parameters(parameters: GUIParameters):
     global range_
     global current_location_
     global rgx_
@@ -117,9 +122,9 @@ def refresh_page(current_location_latitude: float, current_location_longitude: f
     if stop_ == "" and range_ == "":
         if current_location_ != "":
             stop = find_closest_stop(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude))
-            response_ = render_template('index.html', result = stop.name)
+            response_ = render_template('index.html', result = StopDistance(stop.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)))
         else:
-            response_ = render_template('index.html')
+            response_ = render_template('index.html') #, result = response(SAMPLE_STOPS)
 
 
 def return_stops_name(rgxbool: bool, current_location_latitude: float, current_location_longitude: float):
@@ -136,7 +141,7 @@ def return_stops_name(rgxbool: bool, current_location_latitude: float, current_l
             response_ = render_template('index.html', result = response(lst))
         else:
             stop = find_closest_stop(lst, GPSPosition(current_location_latitude, current_location_longitude))
-            response_ = render_template('index.html', result = stop.name)
+            response_ = render_template('index.html', result = StopDistance(stop.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)))
 
 
 def return_stops_in_range(current_location_latitude: float, current_location_longitude: float, rangefloat: float):
@@ -148,11 +153,10 @@ def return_stops_in_range(current_location_latitude: float, current_location_lon
     if stop_ == "" and range_ != "":
         if current_location_ != "":
             lst = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
-            if not lst:
-                response_ = render_template('index.html', result = "Stop not found")
+            if lst_is_empty(lst):
+                pass
             else:
-                if not lst_is_empty(lst):
-                    response_ = render_template('index.html', result = response(lst))
+                response_ = render_template('index.html', result = response(lst, current_location_latitude, current_location_longitude))
         else:
             response_ = render_template('index.html', result = "Please enter your coordinates!!!")
 
@@ -169,16 +173,21 @@ def return_stops_name_in_range(current_location_latitude: float, current_locatio
             lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             lst = find_stops_matching_name(lst_in_range, stop_, rgxbool)
             if not lst_is_empty(lst):
-                response_ = render_template('index.html', result = response(lst))
+                response_ = render_template('index.html', result = response(lst, current_location_latitude, current_location_longitude))
         else:
             response_ = render_template('index.html', result = "Please enter your coordinates!!!")
 
 
-def response(lst: List[Stop]):
+def response(lst: List[Stop], current_location_latitude: float = 0.0, current_location_longitude: float = 0.0):
+    global range_
+
     str = "<br/>"
     strlst = list()
     for target_list in lst:
-        strlst.append(target_list.name)
+        if range_ == "":
+            strlst.append(target_list.name)
+        else:
+            strlst.append(repr(StopDistance(target_list.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), target_list.gps))))
     return str.join(strlst)
 
 
