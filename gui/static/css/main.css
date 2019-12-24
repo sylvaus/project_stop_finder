@@ -9,6 +9,15 @@ table{
     justify-content: space-evenly;
     text-align: left;
 }
+
+td{
+    color: aqua;
+}
+
+th{
+    border-bottom: solid;
+}
+
 label{
     text-shadow: darkslategrey;
     color: ghostwhite;

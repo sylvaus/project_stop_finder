@@ -32,8 +32,11 @@
             <br>
             <div>
                 <input type="submit" value="Find">
+                <input type="submit" value="Show All">
             </div>
         </form>
+
+        <br><br>
 
         {% if lstName %} {% autoescape false %}
         <table>
@@ -68,7 +71,14 @@
         {% endautoescape %} {% endif %}
 
         {% if result %} {% autoescape false %}
-        <p style="color: aqua;">{{ result }}</p>
+        <table>
+            <tr style="text-align: center;">
+                <th>Stop name</th>
+            </tr>
+            <tr>
+                <td>{{ result }}</td>
+            </tr>
+        </table>
         {% endautoescape %} {% endif %}
 
     </div>

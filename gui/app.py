@@ -25,6 +25,7 @@ class GUIParameters:
     rangefloat: float
     current_location_latitude: float
     current_location_longitude: float
+    show_all_bool: bool
 
 @dataclass
 class StopDistance:
@@ -36,6 +37,7 @@ range_:str
 rgx_:str
 current_location_:str
 response_: str
+show_all_: str
 
 
 SAMPLE_STOPS = [
@@ -72,16 +74,20 @@ def index():
     global current_location_
     global rgx_
     global response_
-
-    parameters = GUIParameters(False, 0.0, 0.0, 0.0)
+    global show_all_
+    
+    parameters = GUIParameters(False, 0.0, 0.0, 0.0, False)
 
     if request.method == 'POST':
         parse_data()
         set_parameters(parameters)
-        refresh_page(parameters.current_location_latitude, parameters.current_location_longitude)
-        return_stops_name(parameters.rgxbool, parameters.current_location_latitude, parameters.current_location_longitude)
-        return_stops_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat)
-        return_stops_name_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat, parameters.rgxbool)
+        if parameters.show_all_bool:
+            show_all(parameters.show_all_bool)
+        else:
+            refresh_page(parameters.current_location_latitude, parameters.current_location_longitude)
+            return_stops_name(parameters.rgxbool, parameters.current_location_latitude, parameters.current_location_longitude)
+            return_stops_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat)
+            return_stops_name_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat, parameters.rgxbool)
     return response_
 
         
@@ -90,11 +96,13 @@ def parse_data():
     global range_
     global current_location_
     global rgx_
+    global show_all_
 
     stop_ = request.form['stop']
     range_ = request.form['range']
     current_location_ = request.form['current_location']
     rgx_ = request.form.get('rgx')
+    show_all_ = request.form.get('Show All')
 
 
 def set_parameters(parameters: GUIParameters):
@@ -110,6 +118,15 @@ def set_parameters(parameters: GUIParameters):
         current_location_list = current_location_.split(',')
         parameters.current_location_latitude = float(current_location_list[0])
         parameters.current_location_longitude = float(current_location_list[1])
+    if show_all_ == "Show All":
+            parameters.show_all_bool = True
+
+
+def show_all(show_stops:bool):
+    global response_
+
+    if show_stops:
+            response_ = render_template('index.html', result = send_stop_name(SAMPLE_STOPS))
 
 
 def refresh_page(current_location_latitude: float, current_location_longitude: float):
