@@ -10,6 +10,10 @@ table{
     text-align: left;
 }
 
+.table{
+    border: solid;
+}
+
 td{
     color: aqua;
 }
