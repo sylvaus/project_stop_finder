@@ -54,10 +54,15 @@
             );
             function onMapClick(e) {
                 L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent("your current location is " + e.latlng.toString())
-                    .openOn(map);
-                document.getElementById('current_location').value = e.latlng.lat + ', ' + e.latlng.lng
+                .setLatLng(e.latlng)
+                .setContent("your current location is " + e.latlng.toString())
+                .openOn(map);
+                
+                document.getElementById('current_location').value = e.latlng.lat + ', ' + e.latlng.lng;
+                current_location_e_lat = e.latlng.lat.toString();
+                current_location_e_lng = e.latlng.lng.toString();
+                sessionStorage.setItem("current_location_e_lat_key", current_location_e_lat);
+                sessionStorage.setItem("current_location_e_lng_key", current_location_e_lng);
             }
             map.on('click', onMapClick);
         </script>
@@ -97,10 +102,17 @@
             </tr>
         </table>
         <script type="text/javascript">
-            var marker = (L.marker([parseFloat('{{ stopLat }}'), parseFloat('{{ stopLong }}')])).
+            var stop_marker = (L.marker([parseFloat('{{ stopLat }}'), parseFloat('{{ stopLong }}')])).
             addTo(map).
             bindPopup('{{ stopName }}').
             openPopup();
+            
+            current_location_e_lat = sessionStorage.getItem('current_location_e_lat_key');
+            current_location_e_lng = sessionStorage.getItem('current_location_e_lng_key');
+            var current_location_marker = (L.marker([parseFloat(current_location_e_lat), parseFloat(current_location_e_lng)])).
+                addTo(map).
+                bindPopup("your current location").
+                openPopup();
         </script>
         {% endautoescape %} {% endif %}
 
