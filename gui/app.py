@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from typing import List
+from decimal import Decimal
 from dataclasses import dataclass
 from finders.find_name import find_stops_matching_name
 from finders.find_in_range import find_stops_in_range
@@ -126,7 +127,7 @@ def show_all(show_stops:bool):
     global response_
 
     if show_stops:
-            response_ = render_template('index.html', result = send_stop_name(SAMPLE_STOPS))
+            response_ = render_template('index.html', lstStop = SAMPLE_STOPS)
 
 
 def refresh_page(current_location_latitude: float, current_location_longitude: float):
@@ -141,7 +142,7 @@ def refresh_page(current_location_latitude: float, current_location_longitude: f
             stop = find_closest_stop(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude))
             response_ = render_template('index.html',
                 stopName = stop.name,
-                stopDistance = gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps),
+                stopDistance = toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)/1000),
                 stopLat = stop.gps.latitude,
                 stopLong = stop.gps.longitude)
         else:
@@ -159,12 +160,12 @@ def return_stops_name(rgxbool: bool, current_location_latitude: float, current_l
         if lst_is_empty(lst):
             pass
         elif current_location_ == "":
-            response_ = render_template('index.html', result = send_stop_name(lst))
+            response_ = render_template('index.html', lstStop = lst)
         else:
             stop = find_closest_stop(lst, GPSPosition(current_location_latitude, current_location_longitude))
             response_ = render_template('index.html',
                 stopName = stop.name,
-                stopDistance = gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps),
+                stopDistance = toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)/1000),
                 stopLat = stop.gps.latitude,
                 stopLong = stop.gps.longitude)
 
@@ -206,25 +207,13 @@ def return_stops_name_in_range(current_location_latitude: float, current_locatio
 def send_stop_name_and_distance(lst: List[Stop], current_location_latitude: float = 0.0, current_location_longitude: float = 0.0):
     global response_
 
-    lstName = list()
     lstDistance = list()
+    lstStop = list()
     for target_list in lst:
-        lstName.append(target_list.name)
-        lstDistance.append(gps_distance(GPSPosition(current_location_latitude, current_location_longitude),target_list.gps))
-    response_ = render_template('index.html', lstName=lstName, lstDistance=lstDistance)
+        lstDistance.append(toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), target_list.gps)/1000))
+        lstStop.append(target_list)
+    response_ = render_template('index.html', lstDistance=lstDistance, lstStop=lstStop)
 
-
-def send_stop_name(lst: List[Stop], current_location_latitude: float = 0.0, current_location_longitude: float = 0.0):
-    global range_
-
-    str = "<br/>"
-    strlst = list()
-    for target_list in lst:
-        if range_ == "":
-            strlst.append(target_list.name)
-        else:
-            strlst.append(repr(StopDistance(target_list.name, gps_distance(GPSPosition(current_location_latitude, current_location_longitude), target_list.gps))))
-    return str.join(strlst)
 
 def lst_is_empty(lst: List[Stop]):
     global response_
@@ -233,6 +222,10 @@ def lst_is_empty(lst: List[Stop]):
         response_ = render_template('index.html', result = "Stop not found")
         return True
     return False
+
+
+def toDecimal2(f: float):
+    return round(Decimal(f),2)
 
 
 if __name__ == "__main__":

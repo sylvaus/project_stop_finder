@@ -12,6 +12,7 @@ table{
 
 .table{
     border: solid;
+    text-align: center;
 }
 
 td{

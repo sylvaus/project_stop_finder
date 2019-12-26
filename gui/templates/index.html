@@ -54,10 +54,10 @@
             );
             function onMapClick(e) {
                 L.popup()
-                .setLatLng(e.latlng)
-                .setContent("your current location is " + e.latlng.toString())
-                .openOn(map);
-                
+                    .setLatLng(e.latlng)
+                    .setContent("your current location is " + e.latlng.toString())
+                    .openOn(map);
+
                 document.getElementById('current_location').value = e.latlng.lat + ', ' + e.latlng.lng;
                 current_location_e_lat = e.latlng.lat.toString();
                 current_location_e_lng = e.latlng.lng.toString();
@@ -69,23 +69,46 @@
 
         <br><br>
 
-        {% if lstName %} {% autoescape false %}
+        {% if lstStop %} {% autoescape false %}
         <table class="table">
             <tr style="text-align: center;">
                 <th>Stop name</th>
+                {% if lstDistance %}
                 <th>Distance To Reach</th>
+                {% endif %}
             </tr>
             <tr>
-                <td style="border-right:solid rgb(31, 29, 29);">
-                    {% for ins in lstName %}
-                    <li>{{ins}}</li>
+                <td style="text-align: left;">
+                    {% for ins in lstStop %}
+                    {{ins.name}}<br />
                     {% endfor %}
                 </td>
-                <td>
+                {% if lstDistance %}
+                <td style="border-left:solid rgb(31, 29, 29);">
                     {% for ins in lstDistance %}
-                    <li>{{ins}}</li>
+                    {{ins}}<br />
                     {% endfor %}
                 </td>
+                {% endif %}
+                {% for ins in lstStop %}
+                <script type="text/javascript">
+                    var stop_marker = (L.marker([parseFloat('{{ ins.gps.latitude }}'), parseFloat('{{ ins.gps.longitude }}')]))
+                        .addTo(map)
+                        .bindPopup('{{ ins.name }}')
+                        .openPopup();
+
+                </script>
+                {% endfor %}
+                {% if lstDistance %}
+                <script type="text/javascript">
+                    current_location_e_lat = sessionStorage.getItem('current_location_e_lat_key');
+                    current_location_e_lng = sessionStorage.getItem('current_location_e_lng_key');
+                    var current_location_marker = (L.marker([parseFloat(current_location_e_lat), parseFloat(current_location_e_lng)]))
+                        .addTo(map)
+                        .bindPopup("your current location")
+                        .openPopup();
+                </script>
+                {% endif %}
             </tr>
         </table>
         {% endautoescape %} {% endif %}
@@ -102,17 +125,17 @@
             </tr>
         </table>
         <script type="text/javascript">
-            var stop_marker = (L.marker([parseFloat('{{ stopLat }}'), parseFloat('{{ stopLong }}')])).
-            addTo(map).
-            bindPopup('{{ stopName }}').
-            openPopup();
-            
+            var stop_marker = (L.marker([parseFloat('{{ stopLat }}'), parseFloat('{{ stopLong }}')]))
+                .addTo(map)
+                .bindPopup('{{ stopName }}')
+                .openPopup();
+
             current_location_e_lat = sessionStorage.getItem('current_location_e_lat_key');
             current_location_e_lng = sessionStorage.getItem('current_location_e_lng_key');
-            var current_location_marker = (L.marker([parseFloat(current_location_e_lat), parseFloat(current_location_e_lng)])).
-                addTo(map).
-                bindPopup("your current location").
-                openPopup();
+            var current_location_marker = (L.marker([parseFloat(current_location_e_lat), parseFloat(current_location_e_lng)]))
+                .addTo(map)
+                .bindPopup("your current location")
+                .openPopup();
         </script>
         {% endautoescape %} {% endif %}
 
