@@ -7,6 +7,7 @@ from finders.find_in_range import find_stops_in_range
 from finders.find_closest import find_closest_stop
 from finders.stops import Stop
 from finders.gps import GPSPosition, gps_distance
+from variables import BIXI_list
 
 # from flask_sqlalchemy import SQLAlchemy
 # from datetime import datetime
@@ -39,32 +40,6 @@ rgx_:str
 current_location_:str
 response_: str
 show_all_: str
-
-
-SAMPLE_STOPS = [
-    (Stop(name='de la Commune / Place Jacques-Cartier',
-             gps=GPSPosition(latitude=45.50761009451047, longitude=-73.55183601379395))),
-    (Stop(name='Métro Champ-de-Mars (Viger / Sanguinet)',
-             gps=GPSPosition(latitude=45.51035067563653, longitude=-73.55650842189789))),
-    (Stop(name='Ste-Catherine / Dezery',
-             gps=GPSPosition(latitude=45.539385081961676, longitude=-73.54099988937377))),
-    (Stop(name='Clark / Evans',
-              gps=GPSPosition(latitude=45.51100666600306, longitude=-73.56760203838348))),
-    (Stop(name='du Champ-de-Mars / Gosford',
-             gps=GPSPosition(latitude=45.50965520472071, longitude=-73.55400860309601))),
-    (Stop(name='Metcalfe / du Square-Dorchester',
-             gps=GPSPosition(latitude=45.500208064155046, longitude=-73.57113786041737))),
-    (Stop(name='18e avenue / Rosemont',
-              gps=GPSPosition(latitude=45.55789545752947, longitude=-73.5765291005373))),
-    (Stop(name="de l'Hôtel-de-Ville / Ste-Catherine",
-             gps=GPSPosition(latitude=45.51166045593874, longitude=-73.56213569641113))),
-    (Stop(name='Sanguinet / Ste-Catherine',
-             gps=GPSPosition(latitude=45.51279685582333, longitude=-73.56146247242577))),
-    (Stop(name='Crescent / de Maisonneuve',
-             gps=GPSPosition(latitude=45.49811161443597, longitude=-73.57761539518833))),
-    (Stop(name="Gare d'autocars de Montréal (Berri / Ontario)",
-             gps=GPSPosition(latitude=45.51689676614314, longitude=-73.5639488697052)))
-]
 
 app = Flask(__name__)
 
@@ -127,7 +102,7 @@ def show_all(show_stops:bool):
     global response_
 
     if show_stops:
-            response_ = render_template('index.html', lstStop = SAMPLE_STOPS)
+            response_ = render_template('index.html', lstStop = BIXI_list)
 
 
 def refresh_page(current_location_latitude: float, current_location_longitude: float):
@@ -139,7 +114,7 @@ def refresh_page(current_location_latitude: float, current_location_longitude: f
     # Refresh the webpage when input are not inserted
     if stop_ == "" and range_ == "":
         if current_location_ != "":
-            stop = find_closest_stop(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude))
+            stop = find_closest_stop(BIXI_list, GPSPosition(current_location_latitude, current_location_longitude))
             response_ = render_template('index.html',
                 stopName = stop.name,
                 stopDistance = toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)/1000),
@@ -156,7 +131,7 @@ def return_stops_name(rgxbool: bool, current_location_latitude: float, current_l
 
     # Return available stops matching name 
     if stop_ != "" and range_ == "":
-        lst = find_stops_matching_name(SAMPLE_STOPS, stop_, rgxbool)
+        lst = find_stops_matching_name(BIXI_list, stop_, rgxbool)
         if lst_is_empty(lst):
             pass
         elif current_location_ == "":
@@ -178,7 +153,7 @@ def return_stops_in_range(current_location_latitude: float, current_location_lon
     #  Return available stops in range
     if stop_ == "" and range_ != "":
         if current_location_ != "":
-            lst = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
+            lst = find_stops_in_range(BIXI_list, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             if lst_is_empty(lst):
                 pass
             else:
@@ -196,7 +171,7 @@ def return_stops_name_in_range(current_location_latitude: float, current_locatio
     #  Return available stop in range and matching name.
     if stop_ != "" and range_ != "":
         if current_location_ != "":
-            lst_in_range = find_stops_in_range(SAMPLE_STOPS, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
+            lst_in_range = find_stops_in_range(BIXI_list, GPSPosition(current_location_latitude, current_location_longitude), rangefloat)
             lst = find_stops_matching_name(lst_in_range, stop_, rgxbool)
             if not lst_is_empty(lst):
                 send_stop_name_and_distance(lst, current_location_latitude, current_location_longitude)
