@@ -7,7 +7,7 @@
 {% block body %}
 <div class="content">
     <h1>Stop Finder</h1>
-    <img src="./../static/bmb.png"></img>
+    <img src="./../static/img/bmb.png"></img>
     <br><br><br>
     <div class="form">
         <form action="/" method="POST">
@@ -37,36 +37,8 @@
         </form>
 
         <br><br>
-
         <div id="map" style="height: 20vw; width: 50vw; float: left; border: solid;"></div>
-        <script type="text/javascript">
-            var map = L.map('map').setView([45.51689676614314, -73.5639488697052], 11);
-            map.addLayer(
-                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-                    attribution: 'Map data &copy; \
-                    <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, \
-                    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © \
-                    <a href="https://www.mapbox.com/">Mapbox</a>',
-                    maxZoom: 18,
-                    id: 'mapbox/streets-v11',
-                    accessToken: 'pk.eyJ1IjoiamFhc3NiIiwiYSI6ImNrNGt1bGFmaDIxbHkzbW9ic2Jhbm44bjYifQ.ReKnSfsBy5BO_YZvYgIo5A'
-                })
-            );
-            function onMapClick(e) {
-                L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent("your current location is " + e.latlng.toString())
-                    .openOn(map);
-
-                document.getElementById('current_location').value = e.latlng.lat + ', ' + e.latlng.lng;
-                current_location_e_lat = e.latlng.lat.toString();
-                current_location_e_lng = e.latlng.lng.toString();
-                sessionStorage.setItem("current_location_e_lat_key", current_location_e_lat);
-                sessionStorage.setItem("current_location_e_lng_key", current_location_e_lng);
-            }
-            map.on('click', onMapClick);
-        </script>
-
+        <script src="./../static/js/map.js"></script>
         <br><br>
 
         {% if lstStop %} {% autoescape false %}
@@ -90,24 +62,18 @@
                     {% endfor %}
                 </td>
                 {% endif %}
+                
                 {% for ins in lstStop %}
-                <script type="text/javascript">
-                    var stop_marker = (L.marker([parseFloat('{{ ins.gps.latitude }}'), parseFloat('{{ ins.gps.longitude }}')]))
-                        .addTo(map)
-                        .bindPopup('{{ ins.name }}')
-                        .openPopup();
-
+                <script>
+                    var latitude = '{{ins.gps.latitude}}'
+                    var longitude = '{{ins.gps.longitude}}'
+                    var name = '{{ins.name}}'
                 </script>
+                <script src="./../static/js/stops_marker.js"></script>
                 {% endfor %}
+
                 {% if lstDistance %}
-                <script type="text/javascript">
-                    current_location_e_lat = sessionStorage.getItem('current_location_e_lat_key');
-                    current_location_e_lng = sessionStorage.getItem('current_location_e_lng_key');
-                    var current_location_marker = (L.marker([parseFloat(current_location_e_lat), parseFloat(current_location_e_lng)]))
-                        .addTo(map)
-                        .bindPopup("your current location")
-                        .openPopup();
-                </script>
+                <script src="./../static/js/current_marker.js"></script>
                 {% endif %}
             </tr>
         </table>
@@ -124,19 +90,12 @@
                 <td>{{stopDistance}}</td>
             </tr>
         </table>
-        <script type="text/javascript">
-            var stop_marker = (L.marker([parseFloat('{{ stopLat }}'), parseFloat('{{ stopLong }}')]))
-                .addTo(map)
-                .bindPopup('{{ stopName }}')
-                .openPopup();
-
-            current_location_e_lat = sessionStorage.getItem('current_location_e_lat_key');
-            current_location_e_lng = sessionStorage.getItem('current_location_e_lng_key');
-            var current_location_marker = (L.marker([parseFloat(current_location_e_lat), parseFloat(current_location_e_lng)]))
-                .addTo(map)
-                .bindPopup("your current location")
-                .openPopup();
+        <script>
+            var stopLat = '{{stopLat}}'
+            var stopLng = '{{stopLng}}'
+            var stopName = '{{stopName}}'
         </script>
+        <script src="./../static/js/stop_marker.js"></script>
         {% endautoescape %} {% endif %}
 
         {% if result %} {% autoescape false %}

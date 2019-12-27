@@ -119,7 +119,7 @@ def refresh_page(current_location_latitude: float, current_location_longitude: f
                 stopName = stop.name,
                 stopDistance = toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)/1000),
                 stopLat = stop.gps.latitude,
-                stopLong = stop.gps.longitude)
+                stopLng = stop.gps.longitude)
         else:
             response_ = render_template('index.html')
 
@@ -142,7 +142,7 @@ def return_stops_name(rgxbool: bool, current_location_latitude: float, current_l
                 stopName = stop.name,
                 stopDistance = toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), stop.gps)/1000),
                 stopLat = stop.gps.latitude,
-                stopLong = stop.gps.longitude)
+                stopLng = stop.gps.longitude)
 
 
 def return_stops_in_range(current_location_latitude: float, current_location_longitude: float, rangefloat: float):
