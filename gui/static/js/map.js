@@ -4,7 +4,7 @@ var greenIcon = L.icon({
     iconAnchor: [19, 20], // point of the icon which will correspond to marker's location
     popupAnchor: [-2, -26] // point from which the popup should open relative to the iconAnchor
 });
-var map = L.map('map').setView([45.51689676614314, -73.5639488697052], 11);
+var map = L.map('map').setView([45.55048169934218, -73.64822387695314], 10);
 map.addLayer(
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; \

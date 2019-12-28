@@ -5,110 +5,106 @@
 {% endblock %}
 
 {% block body %}
-<div class="content">
-    <h1>Stop Finder</h1>
-    <img src="./../static/img/bmb.png"></img>
-    <br><br><br>
-    <div class="form">
-        <form action="/" method="POST">
-            <table>
-                <tr>
-                    <td><label>Enter Stop Name</label></td>
-                    <td><input type="text" name="stop" id="stop">
-                        <input type="checkbox" name="rgx" id="rgx" value="True" style="margin-left: -.5vw;">
-                        <label for="rgx" style="margin-left: -.75vw; color: wheat;">regex</label>
+<h1>Stop Finder</h1>
+<img src="./../static/img/bmb.png"></img>
+<br><br>
+<form action="/" method="POST">
+    <table>
+        <tr>
+            <td><label>Enter Stop Name</label></td>
+            <td><input type="text" name="stop" id="stop">
+                <input type="checkbox" name="rgx" id="rgx" value="True" style="margin-left: -.5vw;">
+                <label for="rgx" style="margin-left: -.75vw; color: wheat;">regex</label>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Enter Range </label></td>
-                    <td><input type="text" name="range" id="range"></td>
-                </tr>
-                <tr>
-                    <td><label>Enter Current Location </label></td>
-                    <td><input type="text" name="current_location" id="current_location"></td>
-                </tr>
-            </table>
-            <br>
-            <div>
-                <input type="submit" name="Find" value="Find">
-                <input type="submit" name="Show All" value="Show All">
-            </div>
-        </form>
-
-        <br><br>
-        <div id="map" style="height: 20vw; width: 50vw; float: left; border: solid;"></div>
-        <script src="./../static/js/map.js"></script>
-        <br><br>
-
-        {% if lstStop %} {% autoescape false %}
-        <table class="table">
-            <tr style="text-align: center;">
-                <th>Stop name</th>
-                {% if lstDistance %}
-                <th>Distance To Reach</th>
-                {% endif %}
-            </tr>
-            <tr>
-                <td style="text-align: left;">
-                    {% for ins in lstStop %}
-                    {{ins.name}}<br />
-                    {% endfor %}
-                </td>
-                {% if lstDistance %}
-                <td style="border-left:solid rgb(31, 29, 29);">
-                    {% for ins in lstDistance %}
-                    {{ins}}<br />
-                    {% endfor %}
-                </td>
-                {% endif %}
-                
-                {% for ins in lstStop %}
-                <script>
-                    var latitude = '{{ins.gps.latitude}}'
-                    var longitude = '{{ins.gps.longitude}}'
-                    var name = '{{ins.name}}'
-                </script>
-                <script src="./../static/js/stops_marker.js"></script>
-                {% endfor %}
-
-                {% if lstDistance %}
-                <script src="./../static/js/current_marker.js"></script>
-                {% endif %}
-            </tr>
-        </table>
-        {% endautoescape %} {% endif %}
-
-        {% if stopName %} {% autoescape false %}
-        <table class="table">
-            <tr style="text-align: center;">
-                <th>Stop name</th>
-                <th>Distance To Reach</th>
-            </tr>
-            <tr>
-                <td>{{stopName}}</td>
-                <td>{{stopDistance}}</td>
-            </tr>
-        </table>
-        <script>
-            var stopLat = '{{stopLat}}'
-            var stopLng = '{{stopLng}}'
-            var stopName = '{{stopName}}'
-        </script>
-        <script src="./../static/js/stop_marker.js"></script>
-        {% endautoescape %} {% endif %}
-
-        {% if result %} {% autoescape false %}
-        <table class="table" style="display: inline-flex;">
-            <tr style="text-align: center;">
-                <th>Stop name</th>
-            </tr>
-            <tr>
-                <td>{{ result }}</td>
-            </tr>
-        </table>
-        {% endautoescape %} {% endif %}
-
+            </td>
+        </tr>
+        <tr>
+            <td><label>Enter Range </label></td>
+            <td><input type="text" name="range" id="range"></td>
+        </tr>
+        <tr>
+            <td><label>Enter Current Location </label></td>
+            <td><input type="text" name="current_location" id="current_location"></td>
+        </tr>
+    </table>
+    <br>
+    <div>
+        <input type="submit" name="Find" value="Find">
+        <input type="submit" name="Show All" value="Show All">
     </div>
-</div>
+</form>
+
+<br>
+<div id="map" class="map" style="height: 25vw; width: 40vw;border: solid;"></div>
+<script src="./../static/js/map.js"></script>
+<input type="checkbox" name="show_table" id="show_table" onclick='show()' style="margin-left: -.5vw;">
+<label for="show_table" style="margin-left: -.75vw; color: wheat;">Show Table</label>
+<script src="./../static/js/show.js"></script>
+
+{% if lstStop %}
+<table class="table">
+    <tr style="text-align: center;">
+        <th>Stop name ({{stopsFound}})</th>
+        {% if lstDistance %}
+        <th>Distance To Reach</th>
+        {% endif %}
+    </tr>
+    <tr>
+        <td style="text-align: left;">
+            {% for ins in lstStop %}
+            {{ins.name}}<br />
+            {% endfor %}
+        </td>
+        {% if lstDistance %}
+        <td style="border-left:solid rgb(31, 29, 29);">
+            {% for ins in lstDistance %}
+            {{ins}}<br />
+            {% endfor %}
+        </td>
+        {% endif %}
+    </tr>
+</table>
+{% for ins in lstStop %}
+<script>
+    var latitude = '{{ins.gps.latitude}}'
+    var longitude = '{{ins.gps.longitude}}'
+    var name = '{{ins.name}}'
+</script>
+<script src="./../static/js/stops_marker.js"></script>
+{% endfor %}
+
+{% if lstDistance %}
+<script src="./../static/js/current_marker.js"></script>
+{% endif %}
+{% endif %}
+
+{% if stopName %}
+<table class="table">
+    <tr style="text-align: center;">
+        <th>Stop name</th>
+        <th>Distance To Reach</th>
+    </tr>
+    <tr>
+        <td>{{stopName}}</td>
+        <td>{{stopDistance}}</td>
+    </tr>
+</table>
+<script>
+    var stopLat = '{{stopLat}}'
+    var stopLng = '{{stopLng}}'
+    var stopName = '{{stopName}}'
+</script>
+<script src="./../static/js/stop_marker.js"></script>
+{% endif %}
+
+{% if result %}
+<table class="table">
+    <tr style="text-align: center;">
+        <th>Stop name</th>
+    </tr>
+    <tr>
+        <td>{{ result }}</td>
+    </tr>
+</table>
+{% endif %}
 {% endblock %}

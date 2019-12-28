@@ -135,7 +135,7 @@ def return_stops_name(rgxbool: bool, current_location_latitude: float, current_l
         if lst_is_empty(lst):
             pass
         elif current_location_ == "":
-            response_ = render_template('index.html', lstStop = lst)
+            response_ = render_template('index.html', lstStop = lst, stopsFound=len(lst))
         else:
             stop = find_closest_stop(lst, GPSPosition(current_location_latitude, current_location_longitude))
             response_ = render_template('index.html',
@@ -187,7 +187,7 @@ def send_stop_name_and_distance(lst: List[Stop], current_location_latitude: floa
     for target_list in lst:
         lstDistance.append(toDecimal2(gps_distance(GPSPosition(current_location_latitude, current_location_longitude), target_list.gps)/1000))
         lstStop.append(target_list)
-    response_ = render_template('index.html', lstDistance=lstDistance, lstStop=lstStop)
+    response_ = render_template('index.html', lstDistance=lstDistance, lstStop=lstStop, stopsFound=len(lst))
 
 
 def lst_is_empty(lst: List[Stop]):

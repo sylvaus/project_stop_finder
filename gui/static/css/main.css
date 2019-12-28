@@ -11,8 +11,17 @@ table{
 }
 
 .table{
+    display: none;
     text-align: center;
 }
+
+.map{
+    position: relative;
+    top: 60%;
+    left: 30%;
+    width: 25vw;
+    height: 40vw;
+}​
 
 td{
     color: aqua;
@@ -28,5 +37,5 @@ label{
 }
 
 h1{
-    color: yellow
+    color: yellow;
 }
