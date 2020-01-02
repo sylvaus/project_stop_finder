@@ -102,7 +102,7 @@ def show_all(show_stops:bool):
     global response_
 
     if show_stops:
-            response_ = render_template('index.html', lstStop = BIXI_list)
+            response_ = render_template('index.html', lstStop = BIXI_list, stopsFound=len(BIXI_list))
 
 
 def refresh_page(current_location_latitude: float, current_location_longitude: float):
