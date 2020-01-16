@@ -64,7 +64,8 @@ def index():
             return_stops_name(parameters.rgxbool, parameters.current_location_latitude, parameters.current_location_longitude)
             return_stops_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat)
             return_stops_name_in_range(parameters.current_location_latitude, parameters.current_location_longitude, parameters.rangefloat, parameters.rgxbool)
-    return response_
+        return response_
+    return render_template("index.html")
 
         
 def parse_data():
